@@ -1,4 +1,6 @@
 # Not-Bitwarden
+**Please note, this project is for a web development course as personal practice. Any submissions from others will be rejected.**
+
 ## Description
 
 ## Preview
