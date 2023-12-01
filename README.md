@@ -1,2 +1,11 @@
-# not-bitwarden
-A simple password-generator web app, configurable with several settings
+# Not-Bitwarden
+## Description
+
+## Preview
+
+## Usage
+
+## Credits
+
+## License
+This project is licensed under the [MIT License](./LICENSE).
