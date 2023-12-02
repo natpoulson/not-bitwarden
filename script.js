@@ -127,20 +127,6 @@ class Setting {
 }
 
 function generatePassword(settings) {
-  // A quick try/catch statement to root out anyone trying to invoke this without a Setting object
-  try {
-    const fields = Object.keys(Setting);
-    for (const field of fields) {
-      if (!Object.keys(settings).includes(field)) {
-        throw "[ERROR] Function was called without a valid Setting object! Returning empty string.";
-      };
-    }
-  }
-  catch(err) {
-    console.log(err);
-    return '';
-  }
-
   // Opting to use a limited character set for higher chances of being accepted by sites
   const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
 
