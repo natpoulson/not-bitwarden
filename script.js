@@ -38,24 +38,28 @@ class Setting {
     return this._useSymbols;
   }
 
+  // Setters
   set length(value) {
     // Vet any values that are below minimum length, aren't numbers, or evaluate to Not a Number (NaN), which is - ironically - of type number
     if ( (value < Setting.minLength) || (typeof value !== 'number') || (value === NaN) ) {
-      return Setting.minLength;
+      this._length = Setting.minLength;
+      return;
     }
 
     // Catch all for cases where it's too large
     if ( value > Setting.maxLength ) {
-      return Setting.maxLength;
+      this._length = Setting.maxLength;
+      return;
     }
 
     // By this point all invalidating criteria should be accounted for
-    return value;
+    this._length = value;
+    return;
   }
 
   set useUpperCase(value) {
     if (Setting.checkBool(value) !== null) {
-      this._setUpperCase = value;
+      this._useUpperCase = value;
     }
   }
 
@@ -126,6 +130,7 @@ class Setting {
 function generatePassword(settings) {
   // Opting to use a limited character set for higher chances of being accepted by sites
   const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
+
   const rollLetter = (useCaps = false) => {
     // Roll an ASCII hex value between 0x0061 (a) and 0x007A (z)
     const keyCode = Math.ceil(Math.random() * (0x007A - 0x0061) + 0x0061);
@@ -192,7 +197,3 @@ function writePassword() {
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword); // Establishing event listener to trigger main code block
-
-// Planning
-// Add validator functions/methods to ensure parameters are valid
-// Add generatePassword using params fed from the settings object (maybe we should use class syntax?)
