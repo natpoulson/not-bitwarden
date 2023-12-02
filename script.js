@@ -127,11 +127,14 @@ class Setting {
 }
 
 function generatePassword(settings) {
-  // A quick try/catch statement to quickly root out anyone trying to invoke this function without a Setting object
+  // A quick try/catch statement to root out anyone trying to invoke this without a Setting object
   try {
-    if (!Object.keys(settings).includes("_useUpperCase")) {
-      throw "[ERROR] Function was called without a valid Setting object!";
-    };
+    const fields = Object.keys(Setting);
+    for (const field of fields) {
+      if (!Object.keys(settings).includes(field)) {
+        throw "[ERROR] Function was called without a valid Setting object! Returning empty string.";
+      };
+    }
   }
   catch(err) {
     console.log(err);
