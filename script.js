@@ -10,7 +10,7 @@ class Setting {
   static maxLength = Setting.default.maxLength;
 
   // Initialise the instance properties
-  Constructor() {
+  constructor() {
     this.init();
   }
 
@@ -143,27 +143,42 @@ function generatePassword(settings) {
   const output = []; // The array that will store our fully generated password
 
   for (let i = 0; i < settings.length; i++) {
-    switch (Math.floor(Math.random() * 3)) {
-      case 0:
-        output.push(rollLetter(settings.setUpperCase)); // Choose a letter
-        break;
-      case 1:
-        output.push(Math.floor(Math.random() * 10)); // Choose a digit from 0 to 9
-        break;
-      case 2:
-        output.push(specialChars[Math.floor(Math.random() * specialChars.length)]); // Choose a special character
-        break;
+    let char; // Create an empty vessel for character setting
+
+    // Iterate until we have a character to work with
+    while (!char) {
+      switch (Math.floor(Math.random() * 3)) {
+        case 0:
+          // Choose a letter
+          char = rollLetter(settings.useUpperCase);
+          break;
+        case 1:
+          if (settings.useNumbers) {
+            // Choose a digit from 0 to 9
+            char = Math.floor(Math.random() * 10);
+          }
+          break;
+        case 2:
+          if (settings.useSymbols) {
+            // Choose a special character
+            char = specialChars[Math.floor(Math.random() * specialChars.length)]; 
+          }
+          break;
+      }
     }
+    // Add the value we've obtained to the array
+    output.push(char);
   }
 
-  return output;
+  // Return the full array joined together
+  return output.join('');
 }
+
+  // Initialise an settings object with properties representing the options selected
+  const settings = new Setting;
 
 // Assignment Code
 var generateBtn = document.querySelector("#generate"); // Assigning the button in form to variable
-
-// Initialise an settings object with properties representing the options selected
-const settings = new Setting;
 
 // Write password to the #password input
 function writePassword() {
@@ -180,4 +195,4 @@ generateBtn.addEventListener("click", writePassword); // Establishing event list
 
 // Planning
 // Add validator functions/methods to ensure parameters are valid
-// Add generatePassword using params fed from the settings object (maybe we should use class syntax?)h
+// Add generatePassword using params fed from the settings object (maybe we should use class syntax?)
