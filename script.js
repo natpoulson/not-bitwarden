@@ -123,11 +123,21 @@ class Setting {
       [Cancel (No) | OK (Yes)]`);
     }
 
-
   }
 }
 
 function generatePassword(settings) {
+  // A quick try/catch statement to quickly root out anyone trying to invoke this function without a Setting object
+  try {
+    if (!Object.keys(settings).includes("_useUpperCase")) {
+      throw "[ERROR] Function was called without a valid Setting object!";
+    };
+  }
+  catch(err) {
+    console.log(err);
+    return '';
+  }
+
   // Opting to use a limited character set for higher chances of being accepted by sites
   const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
 
