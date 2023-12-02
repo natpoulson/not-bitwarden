@@ -80,9 +80,11 @@ class Setting {
   }
 
   static isEnabled(parameter) {
+    // Drop an undefined if the value isn't a boolean
     if (typeof parameter !== 'boolean') {
       return undefined;
     }
+    // Return a 'yes/no' response for use in the configure method.
     if (parameter) {
       return 'yes';
     }
@@ -90,21 +92,31 @@ class Setting {
   }
 
   configure() {
-    // Show defaults and ask if they would like to use them
+    // Show defaults and ask if they would like to change them - Asks mmore questions if they opt in
     if (window.confirm(`These are your current settings:\n
     Password Length: ${this.length}
     Use Uppercase: ${Setting.isEnabled(this.useUpperCase)}
     Use Numbers: ${Setting.isEnabled(this.useNumbers)}
     Use Symbols: ${Setting.isEnabled(this.useSymbols)}\n
-    Do you want to change these settings?`)) {
+    Do you want to change these settings?
+    [Cancel (No) | OK (Yes)]`)) {
+
       // Ask for the number of characters they want
-      
+      this.length = Number.parseInt(window.prompt(`How long do you want your password to be?\n
+      Shortest length (Default): ${Setting.minLength}
+      Longest Length: ${Setting.maxLength}`, Setting.minLength));
+
       // Ask if they want uppercase characters
+      this.useUpperCase = window.confirm(`Do you want to include upper-case characters? (ABC)\n
+      [Cancel (No) | OK (Yes)]`);
 
       // Ask if they want numbers
-    
-      // Ask if they want special characters
+      this.useNumbers = window.confirm(`Do you want to include numbers? (123)\n
+      [Cancel (No) | OK (Yes)]`);
 
+      // Ask if they want special characters
+      this.useSymbols = window.confirm(`Do you want to include symbols? (!*#$%)\n
+      [Cancel (No) | OK (Yes)]`);
     }
 
 
