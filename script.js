@@ -115,11 +115,33 @@ class Setting {
       [Cancel (No) | OK (Yes)]`);
 
       // Ask if they want special characters
-      this.useSymbols = window.confirm(`Do you want to include symbols? (!*#$%)\n
+      this.useSymbols = window.confirm(`Do you want to include symbols? (!@#$%^&*)\n
       [Cancel (No) | OK (Yes)]`);
     }
 
 
+  }
+}
+
+function generatePassword(settings) {
+  // Opting to use a limited character set for higher chances of being accepted by sites
+  const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
+  const rollLetter = (useCaps = false) => {
+    // Roll an ASCII hex value between 0x0061 (a) and 0x007A (z)
+    const keyCode = Math.ceil(Math.random() * (0x007A - 0x0061) + 0x0061);
+
+    // Gate the generation of an uppercase character through a one-off random gate
+    // Will either return a falsy (0) or truthy (1) value, so 50-50 chance of it executing
+    if (useCaps && Math.floor(Math.random() * 2)) {
+      // Return the keycode from within its corresponding uppercase range (0x0041 - 0x005A)
+      return String.fromCodePoint(keyCode - 0x0020);
+    }
+    // Return the keycode from what was originally rolled
+    return String.fromCodePoint(keyCode);
+  }
+
+  for (let i = 0; i < settings.length; i++) {
+    // Character selection logic goes here
   }
 }
 
@@ -143,6 +165,5 @@ function writePassword() {
 generateBtn.addEventListener("click", writePassword); // Establishing event listener to trigger main code block
 
 // Planning
-// Add a function to prompt the user for input and then write the config to the settings object
 // Add validator functions/methods to ensure parameters are valid
 // Add generatePassword using params fed from the settings object (maybe we should use class syntax?)h
