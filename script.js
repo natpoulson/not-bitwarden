@@ -10,7 +10,7 @@ class Setting {
   static maxLength = Setting.default.maxLength;
 
   // Initialise the instance properties
-  Constructor() {
+  constructor() {
     this.init();
   }
 
@@ -38,24 +38,28 @@ class Setting {
     return this._useSymbols;
   }
 
+  // Setters
   set length(value) {
     // Vet any values that are below minimum length, aren't numbers, or evaluate to Not a Number (NaN), which is - ironically - of type number
     if ( (value < Setting.minLength) || (typeof value !== 'number') || (value === NaN) ) {
-      return Setting.minLength;
+      this._length = Setting.minLength;
+      return;
     }
 
     // Catch all for cases where it's too large
     if ( value > Setting.maxLength ) {
-      return Setting.maxLength;
+      this._length = Setting.maxLength;
+      return;
     }
 
     // By this point all invalidating criteria should be accounted for
-    return value;
+    this._length = value;
+    return;
   }
 
   set useUpperCase(value) {
     if (Setting.checkBool(value) !== null) {
-      this._setUpperCase = value;
+      this._useUpperCase = value;
     }
   }
 
@@ -115,19 +119,106 @@ class Setting {
       [Cancel (No) | OK (Yes)]`);
 
       // Ask if they want special characters
-      this.useSymbols = window.confirm(`Do you want to include symbols? (!*#$%)\n
+      this.useSymbols = window.confirm(`Do you want to include symbols? (!@#$%^&*)\n
       [Cancel (No) | OK (Yes)]`);
     }
-
 
   }
 }
 
+function generatePassword(settings) {
+  const rollLetter = (useCaps = false, forceUpper = false) => {
+    // Roll an ASCII hex value between 0x0061 (a) and 0x007A (z)
+    const keyCode = Math.ceil(Math.random() * (0x007A - 0x0061) + 0x0061);
+
+    // Gate the generation of an uppercase character through a one-off random gate
+    // Will either return a falsy (0) or truthy (1) value, so 50-50 chance of it executing
+    // forceUpper overrides this behaviour to guarantee an uppercase letter
+    if ((useCaps && Math.floor(Math.random() * 2)) || forceUpper) {
+      // Return the keycode from within its corresponding uppercase range (0x0041 - 0x005A)
+      return String.fromCodePoint(keyCode - 0x0020);
+    }
+    // Return the keycode from what was originally rolled
+    return String.fromCodePoint(keyCode);
+  }
+
+  // Generates a number from 0 to 9
+  const rollNumber = () => {
+    return Math.floor(Math.random() * 10);
+  }
+
+  // Generates a symbol from a limited selection
+  const rollSymbol = () => {
+    // Opting to use a limited character set for higher chances of being accepted by sites
+    const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
+    return specialChars[Math.floor(Math.random() * specialChars.length)];
+  }
+
+  const output = []; // The array that will store our fully generated password
+
+  // These flags will help us determine if any opt-in settings weren't generated at all
+  const charFlags = {
+    upperCase: false,
+    numbers: false,
+    symbols: false
+  };
+
+  for (let i = 0; i < settings.length; i++) {
+    let char; // Create an empty vessel for character setting
+
+    // Iterate until we have a character to work with
+    while (!char) {
+      switch (Math.floor(Math.random() * 3)) {
+        case 0:
+          // Choose a letter
+          if (settings.useUpperCase) {
+            charFlags.upperCase = true;
+          }
+          char = rollLetter(settings.useUpperCase);
+          break;
+        case 1:
+          if (settings.useNumbers) {
+            // Choose a number
+            char = rollNumber();
+            charFlags.numbers = true;
+          }
+          break;
+        case 2:
+          if (settings.useSymbols) {
+            // Choose a symbol
+            char = rollSymbol(); 
+            charFlags.symbols = true;
+          }
+          break;
+      }
+    }
+
+    // Add the value we've obtained to the array
+    output.push(char);
+  }
+
+  // If any of the required options weren't generated, then we'll randomly substitute one of the characters with it
+  if (settings.useUpperCase && !charFlags.upperCase) {
+    output[Math.floor(Math.random() * output.length)] = rollLetter(true, true);
+  }
+
+  if (settings.useNumber && !charFlags.numbers) {
+    output[Math.floor(Math.random() * output.length)] = rollNumber();
+  }
+
+  if (settings.useSymbols && !charFlags.symbols) {
+    output[Math.floor(Math.random() * output.length)] = rollSymbol();
+  }
+
+  // Return the full array joined together
+  return output.join('');
+}
+
+  // Initialise an settings object with properties representing the options selected
+  const settings = new Setting;
+
 // Assignment Code
 var generateBtn = document.querySelector("#generate"); // Assigning the button in form to variable
-
-// Initialise an settings object with properties representing the options selected
-const settings = new Setting;
 
 // Write password to the #password input
 function writePassword() {
@@ -141,8 +232,3 @@ function writePassword() {
 
 // Add event listener to generate button
 generateBtn.addEventListener("click", writePassword); // Establishing event listener to trigger main code block
-
-// Planning
-// Add a function to prompt the user for input and then write the config to the settings object
-// Add validator functions/methods to ensure parameters are valid
-// Add generatePassword using params fed from the settings object (maybe we should use class syntax?)h
