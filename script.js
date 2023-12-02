@@ -140,9 +140,23 @@ function generatePassword(settings) {
     return String.fromCodePoint(keyCode);
   }
 
+  const output = []; // The array that will store our fully generated password
+
   for (let i = 0; i < settings.length; i++) {
-    // Character selection logic goes here
+    switch (Math.floor(Math.random() * 3)) {
+      case 0:
+        output.push(rollLetter(settings.setUpperCase)); // Choose a letter
+        break;
+      case 1:
+        output.push(Math.floor(Math.random() * 10)); // Choose a digit from 0 to 9
+        break;
+      case 2:
+        output.push(specialChars[Math.floor(Math.random() * specialChars.length)]); // Choose a special character
+        break;
+    }
   }
+
+  return output;
 }
 
 // Assignment Code
