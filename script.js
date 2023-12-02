@@ -127,16 +127,14 @@ class Setting {
 }
 
 function generatePassword(settings) {
-  // Opting to use a limited character set for higher chances of being accepted by sites
-  const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
-
-  const rollLetter = (useCaps = false) => {
+  const rollLetter = (useCaps = false, forceUpper = false) => {
     // Roll an ASCII hex value between 0x0061 (a) and 0x007A (z)
     const keyCode = Math.ceil(Math.random() * (0x007A - 0x0061) + 0x0061);
 
     // Gate the generation of an uppercase character through a one-off random gate
     // Will either return a falsy (0) or truthy (1) value, so 50-50 chance of it executing
-    if (useCaps && Math.floor(Math.random() * 2)) {
+    // forceUpper overrides this behaviour to guarantee an uppercase letter
+    if ((useCaps && Math.floor(Math.random() * 2)) || forceUpper) {
       // Return the keycode from within its corresponding uppercase range (0x0041 - 0x005A)
       return String.fromCodePoint(keyCode - 0x0020);
     }
@@ -144,7 +142,26 @@ function generatePassword(settings) {
     return String.fromCodePoint(keyCode);
   }
 
+  // Generates a number from 0 to 9
+  const rollNumber = () => {
+    return Math.floor(Math.random() * 10);
+  }
+
+  // Generates a symbol from a limited selection
+  const rollSymbol = () => {
+    // Opting to use a limited character set for higher chances of being accepted by sites
+    const specialChars = ['!', '@',  '#', '$', '%', '^', '&', '*'];
+    return specialChars[Math.floor(Math.random() * specialChars.length)];
+  }
+
   const output = []; // The array that will store our fully generated password
+
+  // These flags will help us determine if any opt-in settings weren't generated at all
+  const charFlags = {
+    upperCase: false,
+    numbers: false,
+    symbols: false
+  };
 
   for (let i = 0; i < settings.length; i++) {
     let char; // Create an empty vessel for character setting
@@ -154,24 +171,43 @@ function generatePassword(settings) {
       switch (Math.floor(Math.random() * 3)) {
         case 0:
           // Choose a letter
+          if (settings.useUpperCase) {
+            charFlags.upperCase = true;
+          }
           char = rollLetter(settings.useUpperCase);
           break;
         case 1:
           if (settings.useNumbers) {
-            // Choose a digit from 0 to 9
-            char = Math.floor(Math.random() * 10);
+            // Choose a number
+            char = rollNumber();
+            charFlags.numbers = true;
           }
           break;
         case 2:
           if (settings.useSymbols) {
-            // Choose a special character
-            char = specialChars[Math.floor(Math.random() * specialChars.length)]; 
+            // Choose a symbol
+            char = rollSymbol(); 
+            charFlags.symbols = true;
           }
           break;
       }
     }
+
     // Add the value we've obtained to the array
     output.push(char);
+  }
+
+  // If any of the required options weren't generated, then we'll randomly substitute one of the characters with it
+  if (settings.useUpperCase && !charFlags.upperCase) {
+    output[Math.floor(Math.random() * output.length)] = rollLetter(true, true);
+  }
+
+  if (settings.useNumber && !charFlags.numbers) {
+    output[Math.floor(Math.random() * output.length)] = rollNumber();
+  }
+
+  if (settings.useSymbols && !charFlags.symbols) {
+    output[Math.floor(Math.random() * output.length)] = rollSymbol();
   }
 
   // Return the full array joined together
