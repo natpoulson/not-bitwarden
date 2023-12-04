@@ -45,6 +45,9 @@ You can run this repeatedly to make new passwords. Please note that it does not 
   - Expected outcome: The password generated should be guaranteed to have at least one of every character type
 
 ## Credits
+Reference used for Unicode range: Basic Latin (Unicode block). (2023). In Wikipedia. https://en.wikipedia.org/w/index.php?title=Basic_Latin_(Unicode_block)&oldid=1184230372
+Article for handling hexadecimal characters in JS: How to convert hex number to decimal in JavaScript. (n.d.). Byby.Dev. Retrieved December 2, 2023, from https://byby.dev/js-hex-to-decimal
+Example policy used as a reference for limited special character set: Password Policy and passwords with special characters. (2023, March 7). [CT741]. https://www.ibm.com/support/pages/password-policy-and-passwords-special-characters
 
 ## License
 This project is licensed under the [MIT License](./LICENSE).
